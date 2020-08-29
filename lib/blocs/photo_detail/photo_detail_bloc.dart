@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
-import 'package:gallery/models/Photo_model.dart';
+import 'package:gallery/models/photo_model.dart';
 import 'package:gallery/repository/download_repository.dart';
 
 import './bloc.dart';

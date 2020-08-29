@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gallery/blocs/photo_detail/photo_detail_bloc.dart';
 import 'package:gallery/blocs/photo_detail/photo_detail_event.dart';
 import 'package:gallery/blocs/photo_detail/photo_detail_state.dart';
-import 'package:gallery/models/Photo_model.dart';
+import 'package:gallery/models/photo_model.dart';
 import 'package:gallery/repository/download_repository.dart';
 import 'package:permission/permission.dart';
 

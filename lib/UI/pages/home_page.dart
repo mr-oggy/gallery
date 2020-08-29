@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -5,8 +6,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:gallery/UI/widgets/search_text_field.dart';
 import 'package:gallery/blocs/photo_list/bloc.dart';
-import 'package:gallery/models/Photo_model.dart';
+import 'package:gallery/models/photo_model.dart';
 import 'package:gallery/repository/download_repository.dart';
 import 'package:gallery/repository/photo_repository.dart';
 import 'package:gallery/ui/pages/photo_detail.dart';
@@ -41,6 +43,7 @@ class _PhotoListViewState extends State<PhotoListView>
   final borderSide = BorderSide(color: Colors.grey.shade50);
   bool isLoading = false;
   String searchText = '';
+  Timer _debounce;
 
   @override
   void initState() {
@@ -53,6 +56,7 @@ class _PhotoListViewState extends State<PhotoListView>
   @override
   void dispose() {
     _scrollController.dispose();
+    _debounce.cancel();
     super.dispose();
   }
 
@@ -81,37 +85,21 @@ class _PhotoListViewState extends State<PhotoListView>
           child: Column(
             children: [
               SizedBox(height: 12),
-              Container(
-                height: 65.0,
-                child: TextFormField(
-                  textAlign: TextAlign.start,
-                  onFieldSubmitted: (value) {
-                    searchText = value;
-                    _bloc.add(
-                      searchText == null || searchText.isEmpty
-                          ? FetchEvent()
-                          : SearchEvent(value),
-                    );
-                  },
-                  decoration: InputDecoration(
-                    hintText: AppStrings.searchHintText,
-                    fillColor: Color(0xfffFFFFFF),
-                    filled: true,
-                    labelStyle: TextStyle(color: Colors.grey.shade400),
-                    border: OutlineInputBorder(
-                      borderRadius: borderRadius,
-                      borderSide: BorderSide(),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: borderRadius,
-                      borderSide: borderSide,
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: borderRadius,
-                      borderSide: borderSide,
-                    ),
-                  ),
-                ),
+              SearchTextField(
+                onChanged: (value) {
+                  if (_debounce?.isActive ?? false) _debounce.cancel();
+                  _debounce = Timer(
+                    const Duration(milliseconds: 500),
+                    () {
+                      searchText = value;
+                      _bloc.add(
+                        searchText == null || searchText.isEmpty
+                            ? FetchEvent()
+                            : SearchEvent(value),
+                      );
+                    },
+                  );
+                },
               ),
               SizedBox(height: 12),
               Expanded(
@@ -137,6 +125,11 @@ class _PhotoListViewState extends State<PhotoListView>
                     if (state is SearchListLoaded) {
                       isLoading = false;
                       photos = state.photos;
+                    }
+                    if (photos.isEmpty) {
+                      return Center(
+                        child: Text(AppStrings.noImages),
+                      );
                     }
                     return StaggeredGridView.countBuilder(
                       controller: _scrollController,

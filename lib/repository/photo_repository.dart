@@ -1,12 +1,12 @@
 import 'dart:developer';
 
 import 'package:dio/dio.dart';
-import 'package:gallery/models/Photo_model.dart';
+import 'package:gallery/models/photo_model.dart';
 import 'package:gallery/utils/server_address.dart';
 
 abstract class PhotoRepository {
   Future<List<PhotoModel>> getPhotos(int page);
-  Future<List<PhotoModel>> searchPhoto(String query, int page, String from);
+  Future<List<PhotoModel>> searchPhoto(String query, int page);
 }
 
 class MainPhotoRepository implements PhotoRepository {
@@ -31,17 +31,15 @@ class MainPhotoRepository implements PhotoRepository {
     }
   }
 
-  Future<List<PhotoModel>> searchPhoto(
-      String query, int page, String from) async {
-    log("page==> $page $from");
+  Future<List<PhotoModel>> searchPhoto(String query, int page) async {
     try {
       Response response = await Dio().get(
-        ServerAddress.searchPhotos + "?page=$page&query=$query",
-//        queryParameters: {
-//          "page": page,
-//          "query": query,
-//          "per_page": 20,
-//        },
+        ServerAddress.searchPhotos,
+        queryParameters: {
+          "page": page,
+          "query": query,
+          "per_page": 20,
+        },
         options: Options(headers: ServerAddress.header),
       );
 

@@ -1,4 +1,4 @@
-import 'package:gallery/models/Photo_model.dart';
+import 'package:gallery/models/photo_model.dart';
 import 'package:image_downloader/image_downloader.dart';
 
 abstract class DownloadRepository {
