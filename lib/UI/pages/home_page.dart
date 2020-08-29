@@ -39,8 +39,6 @@ class _PhotoListViewState extends State<PhotoListView>
   PhotoListBloc _bloc;
   final _scrollController = ScrollController();
   final _scrollThreshold = 200.0;
-  final borderRadius = BorderRadius.circular(8.0);
-  final borderSide = BorderSide(color: Colors.grey.shade50);
   bool isLoading = false;
   String searchText = '';
   Timer _debounce;

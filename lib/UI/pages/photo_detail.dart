@@ -6,6 +6,7 @@ import 'package:gallery/blocs/photo_detail/photo_detail_event.dart';
 import 'package:gallery/blocs/photo_detail/photo_detail_state.dart';
 import 'package:gallery/models/photo_model.dart';
 import 'package:gallery/repository/download_repository.dart';
+import 'package:gallery/utils/strings.dart';
 import 'package:permission/permission.dart';
 
 class PhotoDetailPageArguments {
@@ -45,6 +46,7 @@ class PhotoDetailWidget extends StatefulWidget {
 
 class PhotoDetailWidgetState extends State<PhotoDetailWidget> {
   PhotoDetailBloc _bloc;
+  final borderRadius = Radius.circular(16);
 
   @override
   void initState() {
@@ -71,27 +73,7 @@ class PhotoDetailWidgetState extends State<PhotoDetailWidget> {
                 ),
               ),
               SafeArea(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: GestureDetector(
-                    child: Container(
-                      height: 35,
-                      width: 35,
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Color(0xFFF64707B),
-                      ),
-                      child: Icon(
-                        Icons.arrow_back,
-                        size: 18,
-                      ),
-                    ),
-                    onTap: () {
-                      Navigator.pop(context);
-                    },
-                  ),
-                ),
+                child: BackButton(),
               ),
               Align(
                 alignment: Alignment.bottomCenter,
@@ -100,26 +82,26 @@ class PhotoDetailWidgetState extends State<PhotoDetailWidget> {
                   color: Colors.white,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.only(
-                      topRight: Radius.circular(16),
-                      topLeft: Radius.circular(16),
+                      topRight: borderRadius,
+                      topLeft: borderRadius,
                     ),
                   ),
                   child: Container(
+                    padding: EdgeInsets.all(12.0),
                     width: MediaQuery.of(context).size.width,
                     height: MediaQuery.of(context).size.height * 0.45,
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(
                           children: [
-                            Padding(
-                              padding: const EdgeInsets.all(12.0),
-                              child: CircleAvatar(
-                                radius: 20,
-                                backgroundImage: CachedNetworkImageProvider(
-                                  widget.photoList.user.profileImage.medium,
-                                ),
+                            CircleAvatar(
+                              radius: 20,
+                              backgroundImage: CachedNetworkImageProvider(
+                                widget.photoList.user.profileImage.medium,
                               ),
                             ),
+                            SizedBox(width: 12),
                             Text(
                               '${widget.photoList.user.username}',
                               style: TextStyle(fontSize: 18),
@@ -143,10 +125,9 @@ class PhotoDetailWidgetState extends State<PhotoDetailWidget> {
                             )
                           ],
                         ),
-                        //SizedBox(height: 20),
-                        Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Text('${widget.photoList.altDescription}'),
+                        SizedBox(height: 20),
+                        Text(
+                          '${widget.photoList.altDescription ?? AppStrings.noImageDescription}',
                         ),
                       ],
                     ),
@@ -185,6 +166,37 @@ class PhotoDetailWidgetState extends State<PhotoDetailWidget> {
   _buildLoading() {
     return CircularProgressIndicator(
       valueColor: AlwaysStoppedAnimation<Color>(Colors.black54),
+    );
+  }
+}
+
+class BackButton extends StatelessWidget {
+  const BackButton({
+    Key key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: GestureDetector(
+        child: Container(
+          height: 35,
+          width: 35,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: Color(0xFFF64707B),
+          ),
+          child: Icon(
+            Icons.arrow_back,
+            size: 18,
+          ),
+        ),
+        onTap: () {
+          Navigator.pop(context);
+        },
+      ),
     );
   }
 }
