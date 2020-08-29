@@ -1,13 +1,21 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:gallery/repository/photo_repository.dart';
-
+import 'package:rxdart/rxdart.dart';
 import './bloc.dart';
 
 class PhotoListBloc extends Bloc<PhotoListEvent, PhotoListState> {
   final PhotoRepository photoRepository;
 
   PhotoListBloc(this.photoRepository) : super(InitialPhotoListState());
+
+  @override
+  Stream<Transition<PhotoListEvent, PhotoListState>> transformEvents(
+      Stream<PhotoListEvent> events, transitionFn) {
+    return events
+        .debounceTime(const Duration(milliseconds: 300))
+        .switchMap((transitionFn));
+  }
 
   @override
   Stream<PhotoListState> mapEventToState(
@@ -44,13 +52,17 @@ class PhotoListBloc extends Bloc<PhotoListEvent, PhotoListState> {
             currentState is InitialPhotoListState) {
           yield InitialPhotoListState();
           final photos = await photoRepository.searchPhoto(
-              event.searchQuery, 0, 'if condifitio');
+            event.searchQuery,
+            0,
+          );
           yield SearchListLoaded(photos, 0);
         } else if (currentState is SearchListLoaded) {
           print('search list laoded');
           int currentPage = currentState.page;
           final photos = await photoRepository.searchPhoto(
-              event.searchQuery, currentPage++, 'else if');
+            event.searchQuery,
+            currentPage++,
+          );
 
           yield photos.isEmpty
               ? currentState.copyWith(photos)
