@@ -1,7 +1,6 @@
-import 'dart:developer';
-
 import 'package:dio/dio.dart';
 import 'package:gallery/models/photo_model.dart';
+import 'package:gallery/utils/app_config.dart';
 import 'package:gallery/utils/server_address.dart';
 
 abstract class PhotoRepository {
@@ -17,7 +16,7 @@ class MainPhotoRepository implements PhotoRepository {
         ServerAddress.getPhotos,
         queryParameters: {
           "page": page,
-          "per_page": 20,
+          "per_page": AppConfig.perPageCount,
         },
         options: Options(headers: ServerAddress.header),
       );
@@ -38,7 +37,7 @@ class MainPhotoRepository implements PhotoRepository {
         queryParameters: {
           "page": page,
           "query": query,
-          "per_page": 20,
+          "per_page": AppConfig.perPageCount,
         },
         options: Options(headers: ServerAddress.header),
       );
